@@ -1,0 +1,53 @@
+{
+  "meta": {
+    "id": "nominal_climb",
+    "name": "Get to the target altitude",
+    "description": "Climb from 1000 ft to 5000 ft without a death wish"
+  },
+  "sim": {
+    "duration_s": 60,
+    "dt_s": 0.1,
+    "units": {
+      "altitude": "ft",
+      "speed": "kts"
+    }
+  },
+  "initial": {
+    "time_s": 0,
+    "altitude_ft": 1000,
+    "ground_speed_kts": 120,
+    "position": {
+      "lat_deg": 44.94,
+      "lon_deg": -123.30
+    },
+    "targets": {
+      "altitude_ft": 5000
+    },
+    "sensors": {
+      "baro": { "valid": true, "noise_sigma_ft": 0 },
+      "gps": { "valid": true, "noise_sigma_m": 0 }
+    }
+  },
+  "events": [
+    {
+      "time_s": 10,
+      "type": "set_target",
+      "target": "altitude_ft",
+      "value": 5000
+    }
+  ],
+  "assertions": [
+    {
+      "id": "reaches_target_by_end",
+      "type": "altitude_within",
+      "when": { "time_s": 55, "window_s": 5 },
+      "expected": { "target": "altitude_ft", "tolerance_ft": 150 }
+    },
+    {
+      "id": "mode_eventually_hold",
+      "type": "mode_equals",
+      "when": { "time_s": 55, "window_s": 5 },
+      "expected": { "value": "HOLD" }
+    }
+  ]
+}

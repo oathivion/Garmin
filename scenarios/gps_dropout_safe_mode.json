@@ -1,0 +1,53 @@
+{
+  "meta": {
+    "id": "gps_dropout_safe_mode",
+    "name": "GPS dropout triggers safe mode",
+    "description": "GPS becomes invalid mid-flight; system should enter SAFE mode and remain stable."
+  },
+  "sim": {
+    "duration_s": 60,
+    "dt_s": 0.1,
+    "units": {
+      "altitude": "ft",
+      "speed": "kts"
+    }
+  },
+  "initial": {
+    "time_s": 0,
+    "altitude_ft": 3000,
+    "ground_speed_kts": 140,
+    "position": {
+      "lat_deg": 44.94,
+      "lon_deg": -123.03
+    },
+    "targets": {
+      "altitude_ft": 3000
+    },
+    "sensors": {
+      "baro": { "valid": true, "noise_sigma_ft": 0 },
+      "gps": { "valid": true, "noise_sigma_m": 0 }
+    }
+  },
+  "events": [
+    {
+      "time_s": 15,
+      "type": "inject_fault",
+      "sensor": "gps",
+      "fault": "dropout"
+    }
+  ],
+  "assertions": [
+    {
+      "id": "enters_safe_mode_after_gps_dropout",
+      "type": "mode_equals",
+      "when": { "time_s": 20, "window_s": 5 },
+      "expected": { "value": "SAFE" }
+    },
+    {
+      "id": "holds_altitude_reasonably_in_safe_mode",
+      "type": "altitude_within",
+      "when": { "time_s": 55, "window_s": 5 },
+      "expected": { "target": "altitude_ft", "tolerance_ft": 250 }
+    }
+  ]
+}

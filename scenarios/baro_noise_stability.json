@@ -1,0 +1,54 @@
+{
+  "meta": {
+    "id": "baro_noise_stability",
+    "name": "Barometer noise stability test",
+    "description": "Barometer noise increases; system should still maintain altitude without oscillating into unsafe behavior."
+  },
+  "sim": {
+    "duration_s": 60,
+    "dt_s": 0.1,
+    "units": {
+      "altitude": "ft",
+      "speed": "kts"
+    }
+  },
+  "initial": {
+    "time_s": 0,
+    "altitude_ft": 5000,
+    "ground_speed_kts": 130,
+    "position": {
+      "lat_deg": 44.94,
+      "lon_deg": -123.03
+    },
+    "targets": {
+      "altitude_ft": 5000
+    },
+    "sensors": {
+      "baro": { "valid": true, "noise_sigma_ft": 10 },
+      "gps": { "valid": true, "noise_sigma_m": 0 }
+    }
+  },
+  "events": [
+    {
+      "time_s": 10,
+      "type": "inject_fault",
+      "sensor": "baro",
+      "fault": "noise",
+      "value": 75
+    }
+  ],
+  "assertions": [
+    {
+      "id": "still_near_target_despite_noise",
+      "type": "altitude_within",
+      "when": { "time_s": 55, "window_s": 5 },
+      "expected": { "target": "altitude_ft", "tolerance_ft": 300 }
+    },
+    {
+      "id": "does_not_enter_safe_mode_from_noise_alone",
+      "type": "mode_not_equals",
+      "when": { "time_s": 55, "window_s": 5 },
+      "expected": { "value": "SAFE" }
+    }
+  ]
+}
