@@ -38,12 +38,18 @@ def scenario_validated(scenario: dict) -> tuple[bool, list[str]]:
     if "duration_s" not in sim:
         error.append("duration_s is missing")
         return False, error
+    
+    if "dt_s" not in sim:
+        error.append("dt_s is missing")
+        return False, error
+    
     sim_dur_s = sim["duration_s"]
-    if not isinstance(sim_dur_s, int) or sim_dur_s >= 0:
+    if sim_dur_s <= 0 or not isinstance(sim_dur_s, (int, float)):
         error.append("Ethier it isn't an int or is empty or is negative")
         return False, error
+    
     sim_dt_s = sim["dt_s"]
-    if not isinstance(sim_dt_s, float) or sim_dt_s >= 0:
+    if sim_dt_s <= 0 or not isinstance(sim_dt_s, (int, float)):
         error.append("Ether dt_s is a float or is empty or is negative/too small")
         return False, error
     
@@ -60,35 +66,35 @@ def scenario_validated(scenario: dict) -> tuple[bool, list[str]]:
     if "ground_speed_kts" not in initial:
         error.append("ground_speed_kts not found in initial")
         return False, error
-    if "target_altitude_ft" not in initial:
+    if initial["targets"]["altitude"] not in initial:
         error.append("target_altitude_ft not found in initial")
         return False, error
-    if "sensors_baro_valid" not in initial:
+    if initial["sensors"]["baro"]["valid"] not in initial:
         error.append("sensors_baro_valid not found in initial")
         return False, error
-    if "sensors_gps_valid" not in initial:
+    if initial["sensors"]["gps"]["valid"] not in initial:
         error.append("sensors_gps_valid not found in initial")
         return False, error
     
     init_altitude_ft = initial["altitude_ft"]
-    if not isinstance(init_altitude_ft, int):
+    if not isinstance(init_altitude_ft, (int, float)):
         error.append("Altitude_ft is not a int")
         return False, error
     init_ground_speed_kts = initial["ground_speed_kts"]
-    if not isinstance(init_ground_speed_kts, int):
+    if not isinstance(init_ground_speed_kts, (int, float)):
         error.append("ground_speed_kts is not a int")
         return False, error
     init_target_altitude_ft = initial["target_altitude_ft"]
-    if not isinstance(init_target_altitude_ft, int):
+    if not isinstance(init_target_altitude_ft, (int, float)):
         error.append("target_altitude_ft is not a int")
         return False, error
     init_sensors_baro_valid = initial["sensors_baro_valid"]
     if not isinstance(init_sensors_baro_valid, bool):
-        error.append("sensors_baro_valid is not a int")
+        error.append("sensors_baro_valid is not a bool")
         return False, error
     init_sensors_gps_valid = initial["sensors_gps_valid"]
     if not isinstance(init_sensors_gps_valid, bool):
-        error.append("sensors_gps_valid is not a int")
+        error.append("sensors_gps_valid is not a bool")
         return False, error
 
 #checks for events existance, and that its a list
@@ -100,14 +106,41 @@ def scenario_validated(scenario: dict) -> tuple[bool, list[str]]:
     if not isinstance(events, list):
         error.append("events isn't a list")
         return False, error
-    
+#jkfsdjbsdalkjfsdah
+
     if "assertions" not in scenario:
         error.append("Assertions isn't in scenario")
         return False, error
+    
     assertions = scenario["assertions"]
     if not isinstance(assertions, list):
         error.append("Assertions isn't a list")
         return False, error
+    
+    if "time_s" not in assertions:
+        error.append("Time_s ain't there")
+        return False, error
+    if "type" not in assertions:
+        error.append("type isn't in assertions")
+        return False, error
+
+    type_valid = assertions["type"]
+    if not isinstance(type_valid, str):
+        error.append("Type isn't a string")
+        return False, error
+    time_s_vald = assertions["time_s"]
+    if not isinstance(time_s_vald, (int, float)):
+        error.append("time_s isn't a number")
+        False, error
+    id_valid = assertions["id"]
+    if not isinstance(id_valid, str) or not id_valid.strip():
+        error.append("id is not a string or is empty")
+        return False, error
+    type_valid2 = assertions["id"]
+    if not isinstance(type_valid2, str) or not type_valid2.strip():
+        error.append("type is not a string or is empty")
+        return False, error
+
     
     
     is_validated = len(error) == 0
