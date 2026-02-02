@@ -1,2 +1,0 @@
-from scenario_loader import scenario_loaded
-from scenario_validator import scenario_validated
